@@ -1,0 +1,2 @@
+# AirQualityMLPrediction
+ This repository focuses on leveraging machine learning techniques to predict air quality parameters based on a modified air quality dataset. The dataset comprises hourly-averaged responses from a multi-sensor device with metal-oxide chemical sensors placed in a polluted area in an Italian city. The data spans from March 2004 to February 2005 and includes raw sensor data as integers, ground-truth concentrations for various gases, and evidence of cross-sensitivities and sensor drifts.
