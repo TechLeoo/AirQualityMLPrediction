@@ -10,7 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -66,13 +67,46 @@ data["ValleyTime"] = data.apply(valley_time, axis = 1)
 
 
 
-# ---> Defining Variables
+# ---> Visualization
+def plot_normal_distribution_curve():
+    data_numerical_columns = data.select_dtypes("number")
+    count = 0
+    while count < 13:
+        data_to_plot = data_numerical_columns.iloc[:, count]
+        
+        # Plotting the histogram
+        plt.figure(figsize = (15, 10))
+        plt.hist(data_to_plot, bins = 10, density = True, alpha=0.7, rwidth = 8.5)
+        plt.title(f"Distribution of {data_to_plot.name}", pad = 10, size = 25)
+        plt.xlabel(f"{data_to_plot.name}")
+        
+        # Plotting the normal distribution
+        x_values = np.linspace(start = min(data_to_plot), stop = max(data_to_plot), num = 200)
+        y_values = norm.pdf(x = x_values, loc = data_to_plot.mean(), scale = data_to_plot.std())
+        
+        plt.plot(x_values, y_values, color='blue', label='Normal Distribution', linewidth = 1)
+        plt.show()
+        
+        count += 1
+        
+data_histogram = data.hist(bins = 10, figsize = (30, 15), alpha=0.7, color='brown')
+data_distribution = plot_normal_distribution_curve()
+
+
+
+# ---> Further Data Preparation and Segregation 
+# (1) Extracting Features from Date
+data["Year"] = pd.to_datetime(data["Date"]).dt.year
+data["Month"] = pd.to_datetime(data["Date"]).dt.month
+data["Day"] = pd.to_datetime(data["Date"]).dt.day
+data["Hour"] = pd.to_datetime(data["Time"], format = '%H:%M:%S').dt.hour
+data = pd.get_dummies(data, columns = ["DayOfWeek"], dtype = np.int64, drop_first = True, prefix = "Date")
+data = data.drop(["Date", "Time"], axis = 1)
+
 x = data.drop(["CO(GT)"], axis = 1) 
 y = data["CO(GT)"]
 
-
-
-# ---> Exploratory Data Analysis
+# (2) Exploratory Data Analysis
 data.info()
 data_head = data.head()
 data_tail = data.tail()
@@ -81,46 +115,17 @@ data_distinct_count = data.nunique()
 data_correlation_matrix = x.corr() # Get the correlation matrix of the independent variables
 data_null_count = data.isnull().sum()
 data_total_null_count = data.isnull().sum().sum()
-#         # Visualization
-# def plot_normal_distribution_curve():
-#     data_numerical_columns = data.select_dtypes("number")
-#     count = 0
-#     while count < 13:
-#         data_to_plot = data_numerical_columns.iloc[:, count]
-        
-#         # Plotting the histogram
-#         plt.figure(figsize = (15, 10))
-#         plt.hist(data_to_plot, bins = 10, density = True, alpha=0.7, rwidth = 8.5)
-#         plt.title(f"Distribution of {data_to_plot.name}", pad = 10, size = 25)
-#         plt.xlabel(f"{data_to_plot.name}")
-        
-#         # Plotting the normal distribution
-#         x_values = np.linspace(start = min(data_to_plot), stop = max(data_to_plot), num = 200)
-#         y_values = norm.pdf(x = x_values, loc = data_to_plot.mean(), scale = data_to_plot.std())
-        
-#         plt.plot(x_values, y_values, color='blue', label='Normal Distribution', linewidth = 1)
-#         plt.show()
-        
-#         count += 1
-        
-# data_histogram = data.hist(bins = 10, figsize = (30, 15), alpha=0.7, color='brown')
+            # ---> More Visuals
+plt.figure(figsize = (30, 10))
+data_heatmap = sns.heatmap(data_correlation_matrix, annot = True, cmap = "coolwarm")
+plt.title('Correlation Matrix of Independent Variables')
+plt.show()
 
-# plt.figure(figsize = (30, 10))
-# data_heatmap = sns.heatmap(data_correlation_matrix, annot = True, cmap = "coolwarm")
-# plt.title('Correlation Matrix of Independent Variables')
-# plt.show()
+# (3) Fixing Missing Values
 
-# data_distribution = plot_normal_distribution_curve()
-
-
-
-# ---> Further Data Preparation and Segregation 
-# (1) Fixing Index
-data["DateTime"] = pd.to_datetime(data["Date"] + " " + data["Time"],)
-data.set_index("DateTime", inplace = True)
-
-# # (2) Removing outliers in the data
-# scaler = StandarScaler()
+# # (4) Removing outliers in the data
+# scaler = StandardScaler()
+# x = scaler.fit_transform(x)
 
 # clean_data = data[data > -3 & data < 3]
 
