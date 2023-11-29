@@ -10,12 +10,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.feature_selection import SelectKBest, f_regression, RFE, RFECV
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
+from sklearn.svm import SVR, LinearSVR
+from sklearn.naive_bayes import GaussianNB, BernoulliNB
+from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import warnings
 
@@ -74,37 +77,39 @@ def valley_time(time):
 
 data["ValleyTime"] = data.apply(valley_time, axis = 1)
 
-# (6) Visualization
-def plot_normal_distribution_curve():
-    data_numerical_columns = data.select_dtypes("number")
-    count = 0
-    while count < 13:
-        data_to_plot = data_numerical_columns.iloc[:, count]
+# # (6) Visualization
+# def plot_normal_distribution_curve():
+#     data_numerical_columns = data.select_dtypes("number")
+#     count = 0
+#     while count < 13:
+#         data_to_plot = data_numerical_columns.iloc[:, count]
         
-        # Plotting the histogram
-        plt.figure(figsize = (15, 10))
-        plt.hist(data_to_plot, bins = 10, density = True, alpha=0.7, rwidth = 8.5)
-        plt.title(f"Distribution of {data_to_plot.name}", pad = 10, size = 25)
-        plt.xlabel(f"{data_to_plot.name}")
+#         # Plotting the histogram
+#         plt.figure(figsize = (15, 10))
+#         plt.hist(data_to_plot, bins = 10, density = True, alpha=0.7, rwidth = 8.5)
+#         plt.title(f"Distribution of {data_to_plot.name}", pad = 10, size = 25)
+#         plt.xlabel(f"{data_to_plot.name}")
         
-        # Plotting the normal distribution
-        x_values = np.linspace(start = min(data_to_plot), stop = max(data_to_plot), num = 200)
-        y_values = norm.pdf(x = x_values, loc = data_to_plot.mean(), scale = data_to_plot.std())
+#         # Plotting the normal distribution
+#         x_values = np.linspace(start = min(data_to_plot), stop = max(data_to_plot), num = 200)
+#         y_values = norm.pdf(x = x_values, loc = data_to_plot.mean(), scale = data_to_plot.std())
         
-        plt.plot(x_values, y_values, color='blue', label='Normal Distribution', linewidth = 1)
-        plt.show()
+#         plt.plot(x_values, y_values, color='blue', label='Normal Distribution', linewidth = 1)
+#         plt.show()
         
-        count += 1
+#         count += 1
         
-data_histogram = data.hist(bins = 10, figsize = (30, 15), alpha=0.7, color='brown')
-data_distribution = plot_normal_distribution_curve()
+# data_histogram = data.hist(bins = 10, figsize = (30, 15), alpha=0.7, color='brown')
+# data_distribution = plot_normal_distribution_curve()
 
 # (7) Extracting Features from Date and Time
 data["Year"] = pd.to_datetime(data["Date"]).dt.year
 data["Month"] = pd.to_datetime(data["Date"]).dt.month
 data["Day"] = pd.to_datetime(data["Date"]).dt.day
 data["HourTime"] = pd.to_datetime(data["Time"], format = '%H:%M:%S').dt.hour
-data = pd.get_dummies(data, columns = ["DayOfWeek"], dtype = np.int64, drop_first = True, prefix = "Date")
+# data = pd.get_dummies(data, columns = ["DayOfWeek"], dtype = np.int64, drop_first = True, prefix = "Date")
+encoder = LabelEncoder()
+data["DayOfWeek"] = encoder.fit_transform(data["DayOfWeek"])
 data = data.drop(["Date", "Time"], axis = 1)
 
 # (8) Exploratory Data Analysis
@@ -135,11 +140,11 @@ print(f"\n\nCounting total empty rows in the data: \n{data_total_null_count}")
 data_column_mode = data.mode()
 print(f"\n\nData Mode: \n{data_column_mode}")
 
-            # ---> More Visuals
-plt.figure(figsize = (30, 10))
-data_heatmap = sns.heatmap(data_correlation_matrix, annot = True, cmap = "coolwarm")
-plt.title('Correlation Matrix of Independent Variables')
-plt.show()
+#             # ---> More Visuals
+# plt.figure(figsize = (30, 10))
+# data_heatmap = sns.heatmap(data_correlation_matrix, annot = True, cmap = "coolwarm")
+# plt.title('Correlation Matrix of Independent Variables')
+# plt.show()
 
 # (9) Dropping the NMHC(GT) column
 data = data.drop(["NMHC(GT)"], axis = 1)
@@ -150,14 +155,15 @@ data = data.drop(["NMHC(GT)"], axis = 1)
 
 # FURTHER DATA PREPARATION AND SEGREGATION
 # (1) Dropping irrelevant columns due to Multicollinearity
-# data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH"], axis = 1)
+# data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "PeakTime", "ValleyTime", "Year", "Month", "Day"], axis = 1)
 # data = data.drop(["NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH"], axis = 1)
+# data = data.drop(["NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)"], axis = 1)
 
 
 # (2) Removing outliers in the data
 scaler = StandardScaler()
 data_scaled = pd.DataFrame(scaler.fit_transform(data), columns = scaler.feature_names_in_)
-data_removed_outliers = data_scaled[(np.around(data_scaled) > -3) & (np.around(data_scaled) < 3)]
+data_removed_outliers = data_scaled[(data_scaled > -3) & (data_scaled < 3)]
 
 # ---> Reverting back
 data_removed_outliers = pd.DataFrame(scaler.inverse_transform(data_removed_outliers), columns = scaler.feature_names_in_)
@@ -170,12 +176,13 @@ clean_data = pd.DataFrame(impute.fit_transform(data_removed_outliers,), columns 
 x = clean_data.drop(["CO(GT)"], axis = 1) 
 y = clean_data["CO(GT)"]
 
-# (5) Feature Selection
-selector = SelectKBest(score_func = f_regression, k = 5)
-x = pd.DataFrame(selector.fit_transform(x, y), columns = selector.get_feature_names_out())
+# # (5) Feature Selection
+# selector = SelectKBest(score_func = f_regression, k = 5)
+# selector = RFE(RandomForestRegressor(random_state = 0), n_features_to_select = 5)
+# x = pd.DataFrame(selector.fit_transform(x, y), columns = selector.get_feature_names_out())
 
 # ---> Columns Score
-features_score = pd.DataFrame({"Features": selector.feature_names_in_, "Score": selector.scores_})
+# features_score = pd.DataFrame({"Features": selector.feature_names_in_, "Score": selector.scores_})
 
 # (6) Splitting the dataset (80:20)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
@@ -186,7 +193,15 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, rando
 
 # MODEL TRAINING AND EVALUATION
 # (1) Training
-regressor = LinearRegression()
+# regressor = GradientBoostingRegressor(random_state = 0, criterion = "squared_error",)
+# regressor = AdaBoostRegressor(random_state = 0, n_estimators=50)
+# regressor = LinearRegression()
+# regressor = RandomForestRegressor(random_state = 0)
+# regressor = GradientBoostingRegressor(random_state = 0)
+regressor = SVR()
+# regressor = LinearSVR(random_state = 0)
+# regressor = BernoulliNB()
+# regressor = XGBRegressor()
 model = regressor.fit(x_train, y_train)
 
 # (2) Prediction
@@ -198,7 +213,10 @@ mse = mean_squared_error(y_test, y_pred1)
 r2 = r2_score(y_test, y_pred1)
 
 
-
+# Cross Validation
+score = cross_val_score(regressor, x, y, cv = 10)
+score_mean = round((score.mean() * 100), 2)
+score_std_dev = round((score.std() * 100), 2)
 
 
 
