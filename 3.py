@@ -12,12 +12,12 @@ import seaborn as sns
 from scipy.stats import norm
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import cross_val_score
-from sklearn.feature_selection import SelectKBest, f_regression, RFE, RFECV
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.feature_selection import SelectKBest, f_regression, RFE, RFECV, SelectFromModel
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
-from sklearn.svm import SVR, LinearSVR
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
+from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import warnings
@@ -103,33 +103,16 @@ data["ValleyTime"] = data.apply(valley_time, axis = 1)
 # data_distribution = plot_normal_distribution_curve()
 
 
-# # (8) Exploratory Data Analysis
-# print("Data Schema")
-# data.info()
-
-# data_head = data.head()
-# print(f"\n\nTop 5 rows in the Data: \n{data_head}")
-
-# data_tail = data.tail()
-# print(f"\n\nBottom 5 rows in the Data: \n{data_tail}")
-
-# data_descriptive_statistic = data.describe()
-# print(f"\n\nData descriptive statistics: \n{data_descriptive_statistic}")
-
-# data_distinct_count = data.nunique()
-# print(f"\n\nUnique values in columns: \n{data_distinct_count}")
-
-# data_correlation_matrix = data.corr() # Get the correlation matrix of the independent variables
-# print(f"\n\nData correlation matrix: \n{data_correlation_matrix}")
-
-# data_null_count = data.isnull().sum()
-# print(f"\n\nCounting empty rows in each column: \n{data_null_count}")
-
-# data_total_null_count = data.isnull().sum().sum()
-# print(f"\n\nCounting total empty rows in the data: \n{data_total_null_count}")
-
-# data_column_mode = data.mode()
-# print(f"\n\nData Mode: \n{data_column_mode}")
+# (8) Exploratory Data Analysis
+data.info()
+data_head = data.head()
+data_tail = data.tail()
+data_descriptive_statistic = data.describe()
+data_distinct_count = data.nunique()
+data_correlation_matrix = data.corr() # Get the correlation matrix of the independent variables
+data_null_count = data.isnull().sum()
+data_total_null_count = data.isnull().sum().sum()
+data_column_mode = data.mode()
 
 # #             # ---> More Visuals
 # # plt.figure(figsize = (30, 10))
@@ -147,26 +130,23 @@ data = data.drop(["NMHC(GT)"], axis = 1)
 
 # # FURTHER DATA PREPARATION AND SEGREGATION
 # # (1) Dropping irrelevant columns due to Multicollinearity
-# # data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "PeakTime", "ValleyTime", "Year", "Month", "Day"], axis = 1)
-# # data = data.drop(["NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH"], axis = 1)
-# # data = data.drop(["NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)"], axis = 1)
+# data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
+# data = data.drop(["C6H6(GT)", "NOx(GT)", "NO2(GT)", "PeakTime", "ValleyTime"], axis = 1)
+# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
+# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1) # BEST SO FAR --> Random Forest
+# data = data.drop(["PeakTime", "ValleyTime",], axis = 1) # BEST --> XGBoost
+# data = data.drop(["PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
+# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1)
+# data = data.drop(["AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
+data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1)
 
 
-# (2) Removing outliers in the data
-# scaler = StandardScaler()
-# data_scaled = pd.DataFrame(scaler.fit_transform(data), columns = scaler.feature_names_in_)
-# data_removed_outliers = data_scaled[(data_scaled > -3) & (data_scaled < 3)]
-
-# # ---> Reverting back
-# data_removed_outliers = pd.DataFrame(scaler.inverse_transform(data_removed_outliers), columns = scaler.feature_names_in_)
+data = data.dropna(subset = "CO(GT)")
 
 # (3) Fixing Missing Values
+# impute = SimpleImputer(strategy = "most_frequent")
 impute = SimpleImputer(strategy = "median")
-# clean_data = pd.DataFrame(impute.fit_transform(data_removed_outliers,), columns = impute.feature_names_in_)
-data1 = pd.DataFrame(impute.fit_transform(data.select_dtypes("number")), columns = impute.feature_names_in_)
-data2 = data.select_dtypes("object")
-data = data2.join(data1)
-
+data.iloc[:, [3, 4, 5, 6]] = impute.fit_transform(data.iloc[:, [3, 4, 5, 6]])
 
 # (7) Extracting Features from Date and Time to Create New Features
 data['Datetime'] = data['Date'] + " " + data['Time']
@@ -189,20 +169,24 @@ data = data.drop(["Date", 'Time', 'DayOfWeekName'], axis = 1)
 x = data.drop(["CO(GT)"], axis = 1) 
 y = data["CO(GT)"]
 
-# (6) Splitting the dataset (80:20)
-x_train = x[x.index < "2005-01-01"]
-x_test = x[x.index >= "2005-01-01"]
-
-y_train = y[y.index < "2005-01-01"]
-y_test = y[y.index >= "2005-01-01"]
-
 # # (5) Feature Selection
-# selector = SelectKBest(score_func = f_regression, k = 5)
-# selector = RFE(RandomForestRegressor(random_state = 0), n_features_to_select = 5)
+# selector = SelectKBest(score_func = f_regression, k = 10)
+# # selector = SelectFromModel(max_features = 5)
+# # selector = RFE(RandomForestRegressor(random_state = 0), n_features_to_select = 5)
 # x = pd.DataFrame(selector.fit_transform(x, y), columns = selector.get_feature_names_out())
 
-# ---> Columns Score
+# # ---> Columns Score
 # features_score = pd.DataFrame({"Features": selector.feature_names_in_, "Score": selector.scores_})
+
+# (6) Splitting the dataset (80:20)
+# x_train = x[x.index < "2005-01-01"]
+# x_test = x[x.index >= "2005-01-01"]
+
+# y_train = y[y.index < "2005-01-01"]
+# y_test = y[y.index >= "2005-01-01"]
+
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
 
 
 
@@ -210,14 +194,11 @@ y_test = y[y.index >= "2005-01-01"]
 # # MODEL TRAINING AND EVALUATION
 # # (1) Training
 # # regressor = GradientBoostingRegressor(random_state = 0, criterion = "squared_error",)
-# # regressor = AdaBoostRegressor(random_state = 0, n_estimators=50)
-# # regressor = LinearRegression()
-# # regressor = RandomForestRegressor(random_state = 0)
-# # regressor = GradientBoostingRegressor(random_state = 0)
-# regressor = SVR()
-# # regressor = LinearSVR(random_state = 0)
+# regressor = LinearRegression()
+regressor = RandomForestRegressor(random_state = 0)
+# regressor = DecisionTreeRegressor(random_state = 0,)
 # # regressor = BernoulliNB()
-regressor = XGBRegressor()
+# regressor = XGBRegressor()
 model = regressor.fit(x_train, y_train)
 
 # (2) Prediction
@@ -233,3 +214,7 @@ r2 = r2_score(y_test, y_pred1)
 score = cross_val_score(regressor, x, y, cv = 10)
 score_mean = round((score.mean() * 100), 2)
 score_std_dev = round((score.std() * 100), 2)
+
+
+# Feature Importance
+imp_features = pd.DataFrame({"Features": model.feature_names_in_, "Score": model.feature_importances_})
