@@ -37,9 +37,6 @@ print(f"\n\nData descriptive statistics: \n{dataset_descriptive_statistic}")
 
 
 
-
-
-
 # DATA PREPARATION
 # (1) Dropping the empty columns
 data = dataset.drop(["Unnamed: 15", "Unnamed: 16"], axis = 1)
@@ -102,8 +99,7 @@ data["ValleyTime"] = data.apply(valley_time, axis = 1)
 # data_histogram = data.hist(bins = 10, figsize = (30, 15), alpha=0.7, color='brown')
 # data_distribution = plot_normal_distribution_curve()
 
-
-# (8) Exploratory Data Analysis
+# (7) Exploratory Data Analysis
 data.info()
 data_head = data.head()
 data_tail = data.tail()
@@ -120,35 +116,24 @@ data_column_mode = data.mode()
 # # plt.title('Correlation Matrix of Independent Variables')
 # # plt.show()
 
-# (9) Dropping the Columns we won't be needing
+# (8) Dropping the NMHC columns readings due to excessive missing values in the columns
 data = data.drop(["NMHC(GT)"], axis = 1)
 
 
 
+# FURTHER DATA PREPARATION AND SEGREGATION
+# (1) Dropping raw sensor readings and other irrelevant columns
+data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1)
 
-
-
-# # FURTHER DATA PREPARATION AND SEGREGATION
-# # (1) Dropping irrelevant columns due to Multicollinearity
-# data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
-# data = data.drop(["C6H6(GT)", "NOx(GT)", "NO2(GT)", "PeakTime", "ValleyTime"], axis = 1)
-# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
-# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1) # BEST SO FAR --> Random Forest
-# data = data.drop(["PeakTime", "ValleyTime",], axis = 1) # BEST --> XGBoost
-# data = data.drop(["PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
-# data = data.drop(["PT08.S2(NMHC)", "PT08.S3(NOx)", "PT08.S5(O3)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1)
-# data = data.drop(["AH", "RH", "T(C)", "PeakTime", "ValleyTime"], axis = 1)
-data = data.drop(["C6H6(GT)", "PT08.S2(NMHC)", "NOx(GT)", "PT08.S3(NOx)", "PT08.S5(O3)", "NO2(GT)", "PT08.S4(NO2)", "PeakTime", "ValleyTime"], axis = 1)
-
-
+# (2) Dropping all missing values in our label CO(GT) to improve our prediction
 data = data.dropna(subset = "CO(GT)")
 
 # (3) Fixing Missing Values
-# impute = SimpleImputer(strategy = "most_frequent")
-impute = SimpleImputer(strategy = "median")
-data.iloc[:, [3, 4, 5, 6]] = impute.fit_transform(data.iloc[:, [3, 4, 5, 6]])
+impute = SimpleImputer(strategy = "most_frequent")
+# impute = SimpleImputer(strategy = "median")
+data.iloc[:, [3, 4, 5, 6, 7, 8, 9, 10]] = impute.fit_transform(data.iloc[:, [3, 4, 5, 6, 7, 8, 9, 10]])
 
-# (7) Extracting Features from Date and Time to Create New Features
+# (4) Extracting Features from Date and Time to Create New Features
 data['Datetime'] = data['Date'] + " " + data['Time']
 data.set_index("Datetime", inplace = True)
 data.index = pd.to_datetime(data.index)
@@ -161,43 +146,24 @@ data["HourTime"] = data.index.hour
 data["DayOfWeek"] = data.index.day_of_week
 data["Quarter"] = data.index.quarter
 
-
-# (4) Dropping the Columns we won't be needing
+# (5) Dropping additional columns we won't be needing
 data = data.drop(["Date", 'Time', 'DayOfWeekName'], axis = 1)
 
-# (4) Grouping dependent and independent variables
+# (6) Grouping dependent and independent variables
 x = data.drop(["CO(GT)"], axis = 1) 
 y = data["CO(GT)"]
 
-# # (5) Feature Selection
-# selector = SelectKBest(score_func = f_regression, k = 10)
-# # selector = SelectFromModel(max_features = 5)
-# # selector = RFE(RandomForestRegressor(random_state = 0), n_features_to_select = 5)
-# x = pd.DataFrame(selector.fit_transform(x, y), columns = selector.get_feature_names_out())
-
-# # ---> Columns Score
-# features_score = pd.DataFrame({"Features": selector.feature_names_in_, "Score": selector.scores_})
-
-# (6) Splitting the dataset (80:20)
-# x_train = x[x.index < "2005-01-01"]
-# x_test = x[x.index >= "2005-01-01"]
-
-# y_train = y[y.index < "2005-01-01"]
-# y_test = y[y.index >= "2005-01-01"]
-
-
+# (7) Splitting the dataset (80:20)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
-
 
 
 
 # # MODEL TRAINING AND EVALUATION
 # # (1) Training
-# # regressor = GradientBoostingRegressor(random_state = 0, criterion = "squared_error",)
+# regressor = GradientBoostingRegressor(random_state = 0, criterion = "squared_error",)
 # regressor = LinearRegression()
 regressor = RandomForestRegressor(random_state = 0)
 # regressor = DecisionTreeRegressor(random_state = 0,)
-# # regressor = BernoulliNB()
 # regressor = XGBRegressor()
 model = regressor.fit(x_train, y_train)
 
@@ -205,16 +171,56 @@ model = regressor.fit(x_train, y_train)
 y_pred = model.predict(x_train)
 y_pred1 = model.predict(x_test)
 
+# (3) Evaluation
+mse_training = mean_squared_error(y_train, y_pred)
+r2_training = r2_score(y_train, y_pred)
 
-mse = mean_squared_error(y_test, y_pred1)
-r2 = r2_score(y_test, y_pred1)
+mse_test = mean_squared_error(y_test, y_pred1)
+r2_test = r2_score(y_test, y_pred1)
 
-
-# Cross Validation
+# (3) Cross Validation
 score = cross_val_score(regressor, x, y, cv = 10)
 score_mean = round((score.mean() * 100), 2)
 score_std_dev = round((score.std() * 100), 2)
 
-
-# Feature Importance
+# (4) Feature Importance
 imp_features = pd.DataFrame({"Features": model.feature_names_in_, "Score": model.feature_importances_})
+
+# # (5) Model Tuning
+# def finding_the_best_k_KNN_method1(cv_num):
+#     # Define the parameter grid
+#     param_grid = {'n_neighbors': range(1, 21)}
+    
+#     # Perform grid search using cross-validation
+#     grid_search = GridSearchCV(KNeighborsClassifier(metric = 'euclidean'), param_grid, cv=cv_num)
+#     grid_search.fit(x_train, y_train)
+    
+#     # Print the best parameter and best score
+#     print("Best k value: ", grid_search.best_params_['n_neighbors'])
+#     print("Best score: ", grid_search.best_score_)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
