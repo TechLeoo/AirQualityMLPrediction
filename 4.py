@@ -236,7 +236,6 @@ data_heatmap = sns.heatmap(data_correlation_matrix, annot = True, cmap = "coolwa
 plt.title('Correlation Matrix of Independent Variables')
 plt.show()
 
-
 # (9) Splitting the dataset (80:20)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
 
@@ -247,12 +246,14 @@ y_train_class_count = y_train.value_counts()
 
 
 
+
+
 # Model Training and Evaluation
 # (1) Base Model Training
 # classifier = LogisticRegression(random_state = 0)
-# classifier = XGBClassifier()
+classifier = XGBClassifier()
 # classifier = GradientBoostingClassifier(random_state = 0)
-classifier = RandomForestClassifier(random_state= 0,)
+# classifier = RandomForestClassifier(random_state= 0,)
 # classifier = DecisionTreeClassifier(random_state= 0)
 model = classifier.fit(x_train, y_train)
 
