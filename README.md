@@ -39,6 +39,3 @@ We welcome collaboration with stakeholders like city authorities and environment
 **By contributing to cleaner air and improved public health, this project aims to leave a positive impact on the polluted Italian city and its residents.**
 
 **This README file provides a concise overview of the project. For a more detailed description, please refer to the individual notebooks and reports within the repository.**
-
-I hope this is helpful! Let me know if you have any other questions.
-
