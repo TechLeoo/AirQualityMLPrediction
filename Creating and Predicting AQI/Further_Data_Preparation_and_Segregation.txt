@@ -1,0 +1,12 @@
+Further Data Preparation (Specific for This Task)
+
+Creating our Air Quality Index involved using the 5 air pollutants and setting a sub-index for each of them based on their level of concentration at that particular hour. Our sub-index ranging from 0 to 4 indicates lower levels as a good level of that air pollutant in the air while 4 indicates very unhealthy or hazardous concentration of that air pollutant. Referencing WHO Air Quality Guidelines, we successfully created our AQI that tells us the air quality at a particular point in time.
+
+As part of our further data preparation steps for this task, we drop columns at three levels:
+- LEVEL 1: The first drop involves us removing all ground truth labels as they won't be relevant for prediction.
+- LEVEL 2: Here we drop all missing values across the rows. This is to allow the machine to get trained on only the actual readings of sensors and allow for better prediction than employing a strategy for handling missing values.
+- LEVEL 3: After extracting and creating new features from our date and time columns, we need to drop the categorical features as they aren't relevant anymore.
+
+While splitting our data, we follow industry standard and use an 80:20 split of the data towards training and testing. Training the data with 80% of the information in the dataset allows for it to learn properly, patterns in our data which in turn allows for better predictions on the 20% of the data left.
+
+Given our classes for prediction are imbalanced, for training our model and to avoid any class imbalance or bias in prediction, we employ the use of the synthetic minority over-sampling technique (SMOTE) from the imblearn library. SMOTE helps to generate synthetic data for the minority classes and helps create an equal number of class width among all classes involved.

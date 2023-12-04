@@ -1,0 +1,17 @@
+4. Further Data Preparation (Specific for This Task)
+
+Data Segregation:
+
+In this section, we remove additional columns that we won't be needing for our model prediction. All ground truth labels except CO(GT) are removed, as CO(GT) remains the target variable for prediction. We utilize raw sensor readings, time, and day of the week as our base features for training our model.
+
+Data Binning:
+
+Our choice to not create bins or groupings of the numerical data for each column was to avoid loss of information in prediction. However, we did use data binning to plot the proper distribution of the data in each column. This allows us to understand whether we have skewed or normal distributions, influencing our strategy for further handling missing values in our data. In our visualization, data binning is employed to plot the histogram graph, showing the distribution of data in each column.
+
+Fixing Missing Values:
+
+After prior data preparation, the data still contains missing values. To address this, we choose to use the median value of the distribution in each column to fix this issue. Statistical analysis reveals that all columns are not normally distributed, except for T(C), RH, and AH, which are either normally distributed or close to normal. Given that the median is a valid measure of center in skewed distributions and performs better than the mean, we set our strategy for fixing missing values to the median.
+
+Data Splitting:
+
+Using an 80:20 split ratio, we follow industry standards, allowing 80% of our data for training and reserving 20% for testing the model's accuracy after prediction. This 20% serves as the basis for evaluating our model before deployment.

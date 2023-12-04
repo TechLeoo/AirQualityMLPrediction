@@ -1,0 +1,18 @@
+Data Preparation (Common to Both Tasks)
+
+Assuming initial exploratory analysis has been done, our data preparation steps include the following:
+
+- Dropping Empty Columns and Unnecessary Columns:
+    - Step 1: We started by dropping these columns ---> "Unnamed: 15" and "Unnamed: 16" as they are completely NULL.
+    - Step 2: We drop the NMHC air pollutant column. The data consists of over 9800 rows. For NMHC, over 8800 of this data is missing. Having more than 3/4 of this data missing could lead to bias in our model if used as a predictor for prediction.
+
+- Replacing "-200" Values:
+    - Replace the "-200" values with np.nan for correct operations of the usual functions.
+
+- Creating New Attributes:
+    - Create a new attribute (column) indicating the day of the week, for instance using:
+      df["DayOfWeek"] = pd.to_datetime(df["Date"], dayfirst=True).dt.day_name().
+    - Create a new field that indicates whether it is a peak time or not.
+    - Create a new field that indicates whether it is valley time or not.
+
+These data preparation steps are crucial for ensuring the data is in a suitable format for analysis and modeling. Dropping unnecessary columns, handling missing values, and creating new attributes based on timestamps contribute to the overall quality of the dataset for both Task 1 and Task 2.

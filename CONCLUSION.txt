@@ -1,0 +1,25 @@
+Conclusions
+
+TASK 1:
+We successfully created a model that can predict the concentration of Carbon Monoxide (CO). With an R-Squared above 90%, the model does a good job of modeling the patterns in predicting the CO concentration. One possible suggestion for improvement to consider is a scenario where we bin all the numerical columns according to their levels of concentration and test this against the model's predictive capacity. This way, we can see if the model picks up other patterns from the data that we missed without data binning. Another consideration is the quality of the data we had to work with. Without any data preparation, we had over 16000 missing values across all rows and columns. Being that the quality of data helps our model better understand and draw patterns between the dependent and independent variables, having a clean dataset would contribute more towards understanding the data.
+The model's performances on the test dataset with baseline parameters are summarized below:
+- BASE MODEL
+    1. RMSE ---> 0.42
+    2. R-Squared ---> 91%
+    3. Cross Validation Mean ---> 88%
+    4. Cross Validation Standard Deviation ---> 2.5
+- OPTIMIZED MODEL
+    1. RMSE ---> 0.38
+    2. R-Squared ---> 93%
+    3. Cross Validation Mean ---> 89%
+    4. Cross Validation Standard Deviation ---> 2
+
+TASK 2:
+Our Task 2 model is a classification model that was trained to predict the AQI given the raw sensor readings, time, and some other defined parameters. With a validation mean of 90% and deviation of 1.8, the model does a good job at predicting the Air Quality Standards given the air pollutants in the air. Our prediction shows a 93% for model accuracy, precision, recall, and f1-score, indicating just how good the model is able to detect the patterns and relationship between the features and the AQI it predicts. One possible improvement we could utilize is to use data binning as a way to gain insight into other patterns in our data we may have missed out on without binning.
+The model's performances on the test dataset with baseline parameters are summarized below:
+1. Accuracy ---> 93%
+2. Precision ---> 93%
+3. Recall ---> 93%
+4. F1-Score ---> 93%
+5. Cross Validation Mean ---> 90%
+6. Cross Validation Standard Deviation ---> 1.8

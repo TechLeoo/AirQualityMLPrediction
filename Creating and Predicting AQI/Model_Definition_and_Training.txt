@@ -1,0 +1,11 @@
+Model Definition and Training
+
+For this classification problem, we employ a Random Forest Classifier. Against all other models tested on this data, the random forest achieves the best balance between generalization and accuracy in prediction. The random forest classifier with baseline parameters without any tuning already does a really good job in predicting our classes.
+
+Model Optimization:
+
+There was no need to create an optimized model for this task. After multiple simulations and hyperparameter tuning, it was established that the model already performs at the highest level with baseline parameters compared to tuning the parameters. In the event that there was an increase in our model's prediction, the changes are really low to be considered significant or optimized. Given the situation, working with the model at base parameters was considered best for this project.
+
+Training and Prediction:
+
+While creating our model, we understand the need to focus on the test data as it is the basis of predictions and recommendations. However, we take into account the predictions and happenings while the model was being trained as well. This gives us a clear image of the stages the model passed through and its behavior while training, before prediction.

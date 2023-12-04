@@ -1,0 +1,17 @@
+Model Evaluation
+
+To evaluate our regression model, we will utilize two major metrics amongst others: the Root Mean Squared Error (RMSE) and the R-Squared. These two metrics cover the foundations that explain how well our model has been trained and can make predictions.
+
+R-Squared:
+Also referred to as the Coefficient of Determination, it measures what extent of the variation in our label Y is explained by the features we used to train our model. R-Squared ranges from 0 to 1, with 1 indicating that the features (x) explain perfectly the variations in our label (Y), while a value of 0 indicates that the features have no way of correlating with the label and serve no purpose in explaining the variations in Y.
+
+RMSE:
+The root mean squared error measures the extent of errors made in our model while making predictions. It checks the total errors across all data points between predictions and the actual values. A value of 0 indicates no errors in prediction, and lower values indicate a better model at prediction, while higher values indicate more errors in prediction.
+
+Cross Validation:
+A technique popular in machine learning that allows you to bootstrap the dataset and run multiple series of simulations of training and testing on the dataset to get a clearer picture of the true accuracy in prediction that our model possesses. This step is considered very important in building any model.
+
+Base Model vs. Optimized Model:
+- Our base model without any hyperparameter tuning has an R-squared of 91%, RMSE of 0.42, a cross-validation mean of 88%, and cross-validation standard deviation of 2.5 for our model. This is a good start, given that we are able to achieve this without any hyperparameter tuning.
+
+- Creating an optimized model allows us to test and see to what extent we can push the ability of our model to predict better than its base form.

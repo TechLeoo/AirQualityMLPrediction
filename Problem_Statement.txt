@@ -1,0 +1,30 @@
+Introduction and Problem Definition
+
+The dataset shows different air pollutants and their hourly average concentrations within a significantly polluted city in Italy. Understanding the impact of these air pollutants can allow us make predictions of the air quality at a given point in time as well as predict the concentration of certain air pollutants like Carbon monoxide(CO). This project helps to draw insight into understanding the impact these pollutants affect the air we breathe, offer triggers at certain times when the concentration of air pollutants like Carbon Monoxide(CO) becomes harzadous in a region.
+
+
+
+UNDERSTANDING THE TASK
+- Task 1 ---> Predicting the CO concentration (in mg/m3): 
+    For this regression analysis problem we want to be able to get the level of concentration of Carbon Monoxide in the air. This problem is defined as regressional given we aren't trying to predict categories and what we are trying to predict is continious. Using features we defined in our data preparation section, we are able to train this regression model to predict the levels of Carbon Monoxide concentrations.
+    
+- Task 2 ---> Define your own Air Quality Index:
+    Upon creation, our air quality index is a range of values between 0 to 4 that grade the level of air quality at a given point in time given the pollutants in the air. The least value 0 indicates good air quality and the best air conditions while 4 indicates a very unhealthy or harzardous air to breathe. Given we are trying to predict values within a category of 0 to 4, this defines our classification problem.
+    
+
+
+DEFINING THE PROBLEM STATEMENT OF OUR PROJECT
+
+Air pollution is a major environmental concern globally, with significant implications for human health. Carbon monoxide (CO) is a particularly harmful air pollutant, causing various adverse health effects, including headaches, dizziness, nausea, and even death in high concentrations. This project aims to address the air pollution challenge in a heavily polluted city in Italy. We will focus on developing solutions for two specific tasks:
+
+Task 1 ---> Predicting Carbon Monoxide (CO) Concentration:
+1. Objective: Develop a robust model to predict the hourly average CO concentration in the city based on available environmental data.
+2. Methodology: Employ machine learning regression techniques to analyze the dataset containing various air pollutant concentrations and meteorological factors.
+3. Expected Outcome: A reliable model capable of predicting CO concentration with high accuracy, allowing for informed decision-making related to public health and air quality management.
+
+Task 2 ---> Defining an Air Quality Index (AQI):
+1. Objective: Create a user-friendly AQI specifically tailored for the Italian city, providing a clear and concise assessment of overall air quality based on multiple pollutants.
+2. Methodology: Analyze the relationships between individual pollutants and their combined impact on public health. Develop a scoring system that assigns a numerical value to different air quality levels, ranging from "Good" to "Hazardous."
+3. Expected Outcome: An AQI that effectively communicates the city's air quality to the public, enabling them to make informed decisions about their health and activities.
+
+This project's success is centered on our ability to develop a CO prediction model with high accuracy and generalizability. The ability to create an AQI that is easy to understand and interpret by the public. Utilize predictions and the AQI to inform air pollution management strategies and public health advisories.

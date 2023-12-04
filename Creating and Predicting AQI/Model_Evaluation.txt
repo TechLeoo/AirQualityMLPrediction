@@ -1,0 +1,14 @@
+Model Evaluation
+
+For a classification model evaluation, we will be using the following:
+- Confusion Matrix: This shows us the True Positives, True Negatives, False Positives, and False Negatives across each class's prediction.
+- Classification Report: This shows us the percentage summary of the Accuracy, Precision, Recall, F1-Score, Overall Average in prediction from our model. A good place to get clearer on the overall prediction capacity of our model across all metrics.
+- Accuracy: This is the percentage of True Positives our model was able to achieve in prediction.
+- Precision (Positive Predictive Value): Precision is the ratio of correctly predicted positive observations to the total predicted positives. It assesses the accuracy of positive predictions.
+- Recall (Sensitivity or True Positive Rate): Recall is the ratio of correctly predicted positive observations to all observations in the actual class. It assesses the model's ability to capture all positive instances.
+- F1 Score: F1 Score is the harmonic mean of Precision and Recall. It provides a balanced assessment of a model's performance.
+- Cross Validation: A technique popular in machine learning that allows you to bootstrap the dataset and run multiple series of simulations of training and testing on the dataset to get a clearer picture of the true accuracy in prediction that our model possesses. This step is considered very important in building any model.
+
+Model Optimization:
+
+The model performs best at baseline with default parameters with little to no improvements when the parameters were tuned. Accuracy in prediction as well as other powerful evaluation metrics drop as well when attempting to tilt the model away from the baseline parameters. We tried increasing the number of estimators above the base of 100, and we get either the same or lower results.

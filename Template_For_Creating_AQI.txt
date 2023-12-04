@@ -1,39 +1,35 @@
 CO(GT) index:
-    0 - 2.4 ---> 1
-    2.5 - 4.4 ---> 2
-    4.5 - 8.4 ---> 3
-    8.5 - 30.4 ---> 4
-    30.5 - 100.4 ---> 5
-    from 100.5 ---> 6
+    CO Concentration (mg/m³)	Index	Air Quality
+    0 - 4	1	Good
+    4 - 9	2	Moderate
+    9 - 14	3	Unhealthy for Sensitive Groups
+    14 - 24	4	Unhealthy
+    > 24    5	Very Unhealthy
 
 C6H6(GT) index:
     0 - 0.54	    ---> 1	Good
     0.55 - 2.4	    ---> 2	Moderate
     2.5 - 4.4       ---> 3	Unhealthy for Sensitive Groups
     4.5 - 8.4	    ---> 4	Unhealthy
-    8.5 - 30.4	    ---> 5	Very Unhealthy
-    > 30.5	    ---> 6	Hazardous
+    > 8.5	        ---> 5	Very Unhealthy
     
 NO2(GT) index:
     0 - 25 ---> 1
     26 - 50 ---> 2
     51 - 100 ---> 3
     101 - 200 ---> 4
-    201 - 400 ---> 5
-    from 401 ---> 6
+    > 201 ---> 5
 
 NOx(GT) index:
-    0 - 30	---> 1	Good
+    0 - 30 ---> 1	Good
     30 - 60	---> 2	Moderate
     60 - 90	---> 3	Unhealthy for Sensitive Groups
-    90 - 120	---> 4	Unhealthy
-    120 - 180	---> 5	Very Unhealthy
-    > 180	---> 6	Hazardous
+    90 - 120 ---> 4	Unhealthy
+    > 120 ---> 5	Very Unhealthy
 
 NMHC(GT) index:
     Good (0-50)	                                Minimal	
     Moderate (51-100)	                        Some
     Unhealthy for Sensitive Groups (101-150)	Significant
     Unhealthy (151-200)	                        Substantial
-    Very Unhealthy (201-300)	                Crucial
-    Hazardous (>300)	                        Critical
+    Very Unhealthy (> 201)	                Crucial

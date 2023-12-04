@@ -1,0 +1,11 @@
+Model Definition and Training
+
+To train our model, we employ the popular Extreme Gradient Boosting algorithm (XGBoost). Using its regressor as the base model, the algorithm proves why it has become a go-to option for many machine learning and model creation solutions. The choice to use the XGBoost Regressor wasn't a difficult one. After running multiple simulations with other regression algorithms to train our model, including the LinearRegression model, SVR model, DecisionTreeRegressor model, RandomForestRegressor model, and more from sklearn, the XGBRegressor provided the best solution for training our model.
+
+Model Optimization:
+
+We tried optimizing our XGBoost regressor to see if we could improve the test R squared and further reduce the Root Mean Squared Error. We noticed slight improvements; however, the changes are not significant enough to be considered a major upgrade from our baseline model.
+
+Training and Prediction:
+
+While creating our model, we understand the need to focus on the test data as it is the basis of predictions and recommendations. However, we take into account the predictions and happenings while the model was being trained as well. This gives us a clear image of the stages the model passed through and its behavior while training before prediction.
