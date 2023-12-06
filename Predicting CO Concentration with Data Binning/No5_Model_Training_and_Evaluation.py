@@ -7,13 +7,23 @@ Created on Mon Dec  4 01:11:25 2023
 
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LinearRegression, Lasso, RidgeCV
 from xgboost import XGBRegressor
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import cross_val_score
 from No4_Further_Data_Preparation import x_train, x_test, y_train, y_test
 
 # (1) Model Training
-regressor = XGBRegressor(n_estimators=1000, learning_rate=0.1)
+regressor = XGBRegressor(n_estimators=1000, learning_rate=0.1, random_state = 0)
+# regressor = LinearRegression()
+# regressor = Lasso(alpha = 0.01)
+# regressor = RidgeCV(alphas = 0.01)
+# regressor = SVR(kernel = "linear", C = 0.05, epsilon = 0.5)
+# regressor = KNeighborsRegressor()
+# regressor = MLPRegressor(max_iter = 1000, activitation = "tanh", learning_rate = "adaptive", warm_start = True)
 model = regressor.fit(x_train, y_train)
 
 # (2) Model Prediction
